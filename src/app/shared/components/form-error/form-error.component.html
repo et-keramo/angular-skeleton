@@ -1,0 +1,12 @@
+<span *ngIf="err === 'required'">
+  필수 입력값입니다.
+</span>
+<span *ngIf="err === 'pattern'">
+  올바르지 않은 입력값입니다.
+</span>
+<span *ngIf="err === 'max'">
+  최대 입력값은 {{ max }} 입니다.
+</span>
+<span *ngIf="err === 'min'">
+  최소 입력값은 {{ min }} 입니다.
+</span>
