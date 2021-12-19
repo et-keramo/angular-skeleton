@@ -1,0 +1,58 @@
+<div
+  ng2FileDrop
+  *ngIf="preview"
+  class="file-drop-zone text-center text-uppercase "
+  [ngClass]="{ 'file-drop-over': dropOver }"
+  [uploader]="uploader"
+  (fileOver)="onFileOver($event)"
+  (onFileDrop)="onFileDrop($event)"
+  (click)="onDropZoneClick()"
+>
+  <div
+    *ngIf="files.length > 0"
+    class="preview-images"
+  >
+    <div 
+      *ngFor="let file of files; let i = index" 
+      class="preview-image-wrapper d-inline-block"
+    >
+      <img class="preview-image" [src]="previews[i] | image:file | async">
+      <div class="preview-name m-t-10">{{ file.name }}</div>
+      <i class="fas fa-times-circle" (click)="removeFile(i)"></i>
+    </div>
+  </div>
+
+  <div
+    *ngIf="files.length === 0"
+    class="file-drop-desc m-t-10"
+  >
+    파일을 여기에 놓아주세요.
+  </div>
+</div>
+
+<div class="custom-file" [hidden]="preview">
+  <input
+    #inputFile
+    type="file"
+    [id]="inputId"
+    class="custom-file-input"
+    [multiple]="multiple ? 'multiple' : ''"
+    (change)="onFileSelected($event)"
+    (click)="onFileInputClick($event)"
+  />
+  <label class="custom-file-label file-labels" [for]="inputId">
+    <span *ngIf="files.length > 0">
+      <span
+        *ngFor="let file of files; let i = index"
+        class="file-label m-r-5"
+      >
+        {{ file.name }}
+        <i class="fas fa-times-circle" (click)="removeFile(i)"></i>
+      </span>
+    </span>
+
+    <div *ngIf="files.length === 0">
+      파일을 선택해주세요.
+    </div>
+  </label>
+</div>
