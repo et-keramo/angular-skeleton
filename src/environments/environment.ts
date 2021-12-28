@@ -5,6 +5,7 @@
 export const environment = {
   production: false,
   API_URL: '/api',
+  WEBSOCKET_URL: '/socket',
   USER_TOKEN: 'user-token',
   USER_INFO: 'user-info'
 };

@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { NgbDate } from '@ng-bootstrap/ng-bootstrap';
 import * as moment from 'moment';
 
 @Injectable({
@@ -12,8 +13,12 @@ export class DateUtil {
     return moment().format(format || this.DEFAULT_FORMAT);
   }
 
-  public format(date: string, format?: string) {
-    return moment(date).format(format || this.DEFAULT_FORMAT);
+  public format(date: NgbDate | string, format?: string) {
+    if (typeof date === 'string') {
+      return moment(date).format(format || this.DEFAULT_FORMAT);
+    } else {
+      return moment(new Date(date.year, date.month - 1, date.day)).format(format || this.DEFAULT_FORMAT);
+    }
   }
 
   public beforeDays(amount: number, format?: string) {
