@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core'
-import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { NgbDatepickerModule, NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap'
 import { NgxDatatableModule } from '@swimlane/ngx-datatable'
 import { TagInputModule } from 'ngx-chips';
