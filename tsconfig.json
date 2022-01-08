@@ -19,6 +19,7 @@
       "dom"
     ],
     "paths": {
+      "@app/*": ["app/*"],
       "@model/*": ["app/models/*"],
       "@service/*": ["app/services/*"],
       "@util/*": ["app/utils/*"],
