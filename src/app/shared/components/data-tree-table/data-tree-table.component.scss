@@ -1,0 +1,27 @@
+.ngx-datatable .datatable-body .datatable-body-cell {
+  .datatable-tree-button, .datatable-tree-button:disabled:active {
+    color: #babfc7;
+    background-color: #ededed;
+    border: 1px solid #babfc7;
+    border-radius: 5px;
+    outline: none;
+    position: relative;
+    top: 1.5px;
+    line-height: normal;
+    margin: 0 10px 0 5px;
+    padding: 2px 4px 1px;
+  }
+
+  .datatable-tree-button:active {
+    color: #fff;
+    background-color: #0C4160;
+  }
+
+  .datatable-tree-button:disabled {
+    opacity: 0.4;
+  }
+
+  .datatable-body-cell-label div {
+    display: inline-block;
+  }
+}

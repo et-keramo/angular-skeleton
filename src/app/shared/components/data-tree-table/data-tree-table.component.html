@@ -1,0 +1,278 @@
+<div class="row">
+  <!-- Button Section -->
+  <div class="col-12 p-0">
+    <button
+      *ngIf="addModal"
+      class="btn btn-primary"
+      (click)="addModal.open()"
+      rippleEffect
+    >
+      <span class="d-none d-sm-inline-block">등록</span>
+    </button>
+
+    <button
+      *ngIf="btnDelete"
+      class="btn btn-danger ml-3"
+      (click)="delete()"
+      [disabled]="selectRows.length === 0"
+      rippleEffect
+    >
+      <span class="d-none d-sm-inline-block">삭제</span>
+    </button>
+  </div>
+
+  <!-- Search Section -->
+  <div class="col-12 m-1 p-0 d-flex justify-content-md-end">
+    <div *ngIf="searchDate" class="d-flex">
+      <form class="form-inline">
+        <div class="form-group hidden">
+          <div class="input-group">
+            <input
+              ngbDatepicker
+              #datepicker="ngbDatepicker"
+              name="datepicker"
+              class="form-control"
+              [autoClose]="'outside'"
+              (dateSelect)="onDateSelect($event)"
+              [displayMonths]="2"
+              [dayTemplate]="dpRange"
+              outsideDays="hidden"
+              [startDate]="fromDate!"
+            />
+            <ng-template #dpRange let-date let-focused="focused">
+              <span
+                class="custom-day"
+                [class.focused]="focused"
+                [class.range]="isRange(date)"
+                [class.faded]="isHovered(date) || isInside(date)"
+                (mouseenter)="hoveredDate = date"
+                (mouseleave)="hoveredDate = null"
+              >
+                {{ date.day }}
+              </span>
+            </ng-template>
+          </div>
+        </div>
+        <div class="form-group m-r-5">
+          <div class="input-group">
+            <input
+              #dpFromDate
+              name="dpFromDate"
+              class="form-control"
+              placeholder="yyyy-mm-dd"
+              [value]="formatter.format(fromDate)"
+            />
+            <div class="input-group-append">
+              <button
+                type="button"
+                class="btn btn-outline-secondary"
+                (click)="datepicker.toggle()"
+                rippleEffect
+              >
+                <i class="far fa-calendar-alt"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        ~
+        <div class="form-group m-l-5">
+          <div class="input-group">
+            <input
+              #dpToDate
+              name="dpToDate"
+              class="form-control"
+              placeholder="yyyy-mm-dd"
+              [value]="formatter.format(toDate)"
+            />
+            <div class="input-group-append">
+              <button
+                type="button"
+                class="btn btn-outline-secondary"
+                (click)="datepicker.toggle()"
+                rippleEffect
+              >
+                <i class="far fa-calendar-alt"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div *ngIf="searchKeyword" class="d-flex align-items-center justify-content-end">
+      <div class="m-r-5">
+        <div ngbDropdown class="btn-group dropdown" placement="auto">
+          <button ngbDropdownToggle type="button" class="btn btn-sm btn-primary btn-tag-search">{{ pagination.operator }}</button>
+          <div ngbDropdownMenu class="dropdown-tag-search">
+            <a class="dropdown-item" href="javascript:" (click)="pagination.operator = 'OR'">OR</a>
+            <a class="dropdown-item" href="javascript:" (click)="pagination.operator = 'AND'">AND</a>
+          </div>
+        </div>
+      </div>
+      <div class="m-r-5">
+        <tag-input 
+          #tagInput
+          class="tag-chips form-control"
+          placeholder="검색어"
+          secondaryPlaceholder="검색어를 입력하세요."
+          [onlyFromAutocomplete]="true"
+          [modelAsStrings]="true"
+          [(ngModel)]="pagination.keywords"
+          (onRemove)="reload()"
+          (keyup)="onKeyup($event)"
+        >
+        </tag-input>
+      </div>
+      <div>
+        <button class="btn btn-primary btn-sm btn-search" (click)="search()">검색</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ngx-datatable
+  #dataTable
+  class="bootstrap core-bootstrap"  
+  [rows]="filterRows"
+  [columnMode]="columnMode"
+  headerHeight="40"
+  rowHeight="40"
+  footerHeight="0"
+  [messages]="emptyMessage"
+  [selectionType]="selectionType"
+  [count]="pagination.total"
+  [selected]="selectRows"
+  [sortType]="'single'"
+  [sorts]="pagination.sort"
+  [treeFromRelation]="parent"
+  [treeToRelation]="leaf" 
+  [loadingIndicator]="loading"
+  (select)="onSelect($event)"
+  (sort)="onSort($event)"
+  (treeAction)="onTree($event)"
+>
+ 
+  <!-- Checkbox -->
+  <ngx-datatable-column
+    *ngIf="btnDelete"
+    [width]="50"
+    [sortable]="false"
+    [canAutoResize]="false"
+    [draggable]="false"
+    [resizeable]="false"
+  >
+    <ng-template
+      ngx-datatable-header-template
+      let-value="value"
+      let-allRowsSelected="allRowsSelected"
+      let-selectFn="selectFn"
+    >
+      <div class="custom-control custom-checkbox">
+        <input
+          type="checkbox"
+          id="{{ id }}HeaderChkbxRef"
+          class="custom-control-input"
+          [checked]="allRowsSelected"
+          (change)="selectFn(!allRowsSelected)"
+        />
+        <label class="custom-control-label" for="{{ id }}HeaderChkbxRef"></label>
+      </div>
+    </ng-template>
+    <ng-template
+      ngx-datatable-cell-template
+      let-row="row"
+      let-rowIndex="rowIndex"
+      let-value="value"
+      let-isSelected="isSelected"
+      let-onCheckboxChangeFn="onCheckboxChangeFn"
+    >
+      <div class="custom-control custom-checkbox">
+        <input
+          type="checkbox"
+          id="{{ id }}RowChkbxRef{{ rowIndex }}"
+          class="custom-control-input"
+          [checked]="isSelected"
+          (change)="onCheckboxChangeFn($event); onCheck(row, !isSelected)"
+        />
+        <label class="custom-control-label" for="{{ id }}RowChkbxRef{{ rowIndex }}"></label>
+      </div>
+    </ng-template>
+  </ngx-datatable-column>
+
+  <!-- Column -->
+  <ng-container *ngFor="let key of displayColumns">
+    <ngx-datatable-column 
+      [id]="key"
+      [prop]="columns[key].prop ? columns[key].prop : key"
+      [name]="columns[key].name"
+      [flexGrow]="columns[key].flexGrow"
+      [sortable]="columns[key].sortable !== false"
+      [isTreeColumn]="true"
+      cellClass="d-flex align-items-center"
+    >
+      <ng-template
+        ngx-datatable-cell-template
+        let-row="row"
+        let-rowIndex="rowIndex"
+      >
+        {{ row[key] }}
+      </ng-template>
+    </ngx-datatable-column>
+  </ng-container>
+  
+  <!-- Button -->
+  <ng-container *ngFor="let col of buttonColumns">
+    <ngx-datatable-column
+      [name]="col.name"
+      [flexGrow]="col.flexGrow ? col.flexGrow : 1"
+      [sortable]="false"
+    >
+      <ng-template
+        ngx-datatable-cell-template
+        let-row="row"
+      >
+        <ng-container *ngFor="let btn of col.button; let i = index">
+          <button
+            class="btn btn-primary btn-sm"
+            [ngClass]="{ 'm-l-5': i > 0 }"
+            (click)="btn.click(row)"
+            rippleEffect
+          >
+            <span class="d-none d-sm-inline-block">{{ btn.text }}</span>
+          </button>
+        </ng-container>
+      </ng-template>
+    </ngx-datatable-column>  
+  </ng-container>
+
+  <ngx-datatable-column
+    *ngIf="detailModal || updateModal"
+    name="작업"
+    [flexGrow]="1"
+    [sortable]="false"
+  >
+    <ng-template
+      ngx-datatable-cell-template
+      let-row="row"
+    >
+      <button
+        *ngIf="detailModal"
+        [ngClass]="{ 'm-r-5': updateModal }"
+        class="btn btn-primary btn-sm"
+        (click)="detailModal.open(row)"
+        rippleEffect
+      >
+        <span class="d-none d-sm-inline-block">상세</span>
+      </button>
+      <button
+        *ngIf="updateModal"
+        class="btn btn-primary btn-sm"
+        (click)="updateModal.open(row)"
+        rippleEffect
+      >
+        <span class="d-none d-sm-inline-block">수정</span>
+      </button>
+    </ng-template>
+  </ngx-datatable-column>
+  
+</ngx-datatable>
